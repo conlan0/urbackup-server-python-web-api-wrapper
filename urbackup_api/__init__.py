@@ -555,3 +555,25 @@ class urbackup_server:
             return False
 
         return True
+
+    def restore_client_file(self, clientid, backupid, path, filter_value, lang="en"):
+        if not self.login():
+            return None
+
+        params = {
+            "sa": "clientdl",
+            "clientid": clientid,
+            "backupid": backupid,
+            "path": path,
+            "filter": filter_value,
+            "lang": lang
+        }
+        if self._session:
+            params["ses"] = self._session
+
+        response = self._get_response("backups", params, method="GET")
+        if response.status != 200:
+            logger.error("Restore file failed, status: " + str(response.status))
+            return None
+
+        return response.read()
